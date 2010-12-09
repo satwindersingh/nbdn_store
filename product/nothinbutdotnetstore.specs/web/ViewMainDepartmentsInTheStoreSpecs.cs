@@ -41,5 +41,33 @@ namespace nothinbutdotnetstore.specs.web
             static IEnumerable<Department> the_main_departments;
             static ResponseEngine response_engine;
         }
+        [Subject(typeof(ViewSubDepartmentsforMainDepartmentsInTheStore))]
+        public class when_We_want_to_list_sub_deprtments_in_a_department : concern
+        {
+
+            Establish c = () =>
+            {
+                response_engine = the_dependency<ResponseEngine>();
+                main_department = new Department();
+                department_repository = the_dependency<Repository>();
+                the_sub_departments = new List<Department>();
+                request = an<Request>();
+
+                department_repository.Stub(x => x.get_all_the_sub_departments_from_a_main_department_in_the_store(main_department)).Return(
+                    the_sub_departments);
+            };
+
+            Because b = () =>
+                sut.process(request);
+
+            It should_tell_the_response_to_display_the_sub_departments = () =>
+                response_engine.received(x => x.prepare(the_sub_departments));
+            
+            static Repository department_repository;
+            static Request request;
+            static IEnumerable<Department> the_sub_departments;
+            static ResponseEngine response_engine;
+            private static Department main_department;
+        }
     }
 }
